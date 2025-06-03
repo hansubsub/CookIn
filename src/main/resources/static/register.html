@@ -2,107 +2,154 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>CookIn Join</title>
+    <title>나의 냉장고</title>
     <style>
         body {
             font-family: Arial, sans-serif;
+            margin: 0;
             background-color: #fff;
+        }
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 30px;
+            background-color: white;
+            border-bottom: 2px solid #466f2b;
+        }
+        .topbar-left {
+            display: flex;
+            align-items: center;
+        }
+        .topbar-left img {
+            width: 40px;
+            margin-right: 10px;
+        }
+        .topbar-left span {
+            font-size: 24px;
+            font-weight: bold;
+            color: #466f2b;
+        }
+        .topbar-right button {
+            background: none;
+            border: none;
+            font-size: 16px;
+            margin-left: 20px;
+            cursor: pointer;
+        }
+        .menubar {
+            background-color: #466f2b;
             display: flex;
             justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
-
-        .container {
-            text-align: center;
-        }
-
-        .title {
-            font-size: 32px;
-            color: #568a35;
-            margin-bottom: 30px;
-            font-weight: bold;
-        }
-
-        form {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        input {
-            width: 280px;
-            padding: 12px;
-            margin: 8px 0;
-            border: 1px solid #999;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-
-        button {
-            width: 300px;
-            padding: 12px;
-            background-color: #568a35;
-            color: white;
+        .menubar button {
+            background: none;
             border: none;
-            border-radius: 20px;
+            color: white;
             font-size: 16px;
+            margin: 10px 100px;
             cursor: pointer;
-            margin-top: 12px;
         }
-
-        button:hover {
-            background-color: #466f2b;
+        .menubar button + button {
+            border-left: 1px solid white;
+            padding-left: 100px;
+            margin-left: 100px;
+        }
+        .content {
+            margin: 50px auto;
+            width: 60%;
+            max-width: 700px;
+            min-height: 500px;
+            border: 2px solid #333;
+            padding: 30px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .content-title {
+            font-size: 26px;
+            color: #466f2b;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 12px;
+            font-size: 16px;
+        }
+        th {
+            background-color: #f2f2f2;
         }
     </style>
 </head>
 <body>
-<div class="container">
-    <div class="title">Join</div>
-    <form id="register-form">
-        <input type="text" id="name" placeholder="이름" required>
-        <input type="text" id="username" placeholder="아이디" required>
-        <input type="password" id="password" placeholder="비밀번호" required>
-        <input type="password" id="confirmPassword" placeholder="비밀번호 확인" required>
-        <input type="date" id="birth" required>
-        <button type="submit">회원가입</button>
-    </form>
+<div class="topbar">
+    <div class="topbar-left">
+        <img src="./images/fridge-icon.png" alt="CookIn 로고">
+        <span>CookIn</span>
+    </div>
+    <div class="topbar-right">
+        <button onclick="location.href='mypage.html'">마이페이지</button>
+        <button onclick="logout()">로그아웃</button>
+    </div>
+</div>
+
+<div class="menubar">
+    <button onclick="location.href='fridge.html'">나의 냉장고</button>
+    <button onclick="location.href='add_ingredient.html'">식재료 추가</button>
+</div>
+
+<div class="content">
+    <div class="content-title">나의 냉장고</div>
+    <table>
+        <thead>
+        <tr>
+            <th>식재료 이름</th>
+            <th>남은 일수</th>
+            <th>유통기한</th>
+        </tr>
+        </thead>
+        <tbody id="ingredient-table-body">
+        <!-- 데이터 행 들어감 -->
+        </tbody>
+    </table>
 </div>
 
 <script>
-    document.getElementById('register-form').addEventListener('submit', async function(e) {
-        e.preventDefault();
+    async function loadIngredients() {
+        const response = await fetch('/api/ingredients/user/4');
+        const data = await response.json();
 
-        const name = document.getElementById('name').value;
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
-        const confirmPassword = document.getElementById('confirmPassword').value;
-        const birth = document.getElementById('birth').value;
+        const tbody = document.getElementById('ingredient-table-body');
+        tbody.innerHTML = '';
 
-        if (password !== confirmPassword) {
-            alert('비밀번호가 일치하지 않습니다.');
-            return;
-        }
+        data.forEach(item => {
+            const today = new Date();
+            const expireDate = new Date(item.expirationDate);
+            const diffTime = expireDate - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-        try {
-            const response = await fetch('/api/users/register', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, username, password, birth })
-            });
+            const row = `<tr>
+                    <td>${item.name}</td>
+                    <td>D-${diffDays}</td>
+                    <td>${item.expirationDate.replace(/-/g, '.')}</td>
+                </tr>`;
+            tbody.innerHTML += row;
+        });
+    }
 
-            if (response.ok) {
-                alert('회원가입 성공!');
-                window.location.href = '/login.html'; // 성공 후 이동할 페이지
-            } else {
-                alert('회원가입 실패.');
-            }
-        } catch (error) {
-            console.error('에러 발생:', error);
-            alert('서버 오류가 발생했습니다.');
-        }
-    });
+    function logout() {
+        alert('로그아웃되었습니다.');
+        location.href = 'login.html';
+    }
+
+    window.onload = () => {
+        loadIngredients();
+    }
 </script>
 </body>
 </html>
