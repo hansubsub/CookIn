@@ -62,4 +62,20 @@ public class IngredientService {
         ingredientRepository.delete(ingredient);
     }
 
+    // ✅ 여기 추가
+    public List<IngredientResponse> getExpiringIngredients(Long userId) {
+        LocalDate today = LocalDate.now();
+        LocalDate tomorrow = today.plusDays(1);
+
+        List<Ingredient> ingredients = ingredientRepository.findByUserUserId(userId);
+
+        return ingredients.stream()
+                .filter(i -> {
+                    LocalDate exp = i.getExpirationDate();
+                    return !exp.isBefore(today) && !exp.isAfter(tomorrow);
+                })
+                .map(i -> new IngredientResponse(i.getId(), i.getName(), i.getExpirationDate()))
+                .collect(Collectors.toList());
+    }
 }
+

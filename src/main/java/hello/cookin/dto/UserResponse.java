@@ -3,6 +3,8 @@ package hello.cookin.dto;
 import hello.cookin.entity.User;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
+
 @Getter
 public class UserResponse {
     private Long userId;
@@ -15,3 +17,5 @@ public class UserResponse {
         this.name = user.getName();
     }
 }
+
+
