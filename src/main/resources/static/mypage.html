@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>My Page - CookIn</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            text-align: center;
+            border: 2px solid #466f2b;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #568a35;
+            margin-bottom: 30px;
+        }
+
+        .info {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            background-color: #568a35;
+            color: white;
+        }
+
+        button:hover {
+            background-color: #466f2b;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>My Page</h1>
+    <div class="info" id="name">이름: </div>
+    <div class="info" id="username">아이디: </div>
+    <div class="info" id="birth">생년월일: </div>
+
+    <button onclick="location.href='fridge.html'">나의 냉장고로 가기</button>
+    <button onclick="logout()">로그아웃</button>
+</div>
+
+<script>
+    async function loadProfile() {
+        try {
+            const res = await fetch('/api/users/profile', {
+                credentials: 'include'
+            });
+            if (!res.ok) throw new Error('불러오기 실패');
+
+            const user = await res.json();
+
+            document.getElementById('name').innerText = `이름: ${user.name}`;
+            document.getElementById('username').innerText = `아이디: ${user.username}`;
+            document.getElementById('birth').innerText = `생년월일: ${user.birth}`;
+        } catch (err) {
+            alert('사용자 정보를 불러오지 못했습니다.');
+        }
+    }
+
+    function logout() {
+        alert('로그아웃 되었습니다.');
+        location.href = 'login.html';
+    }
+
+    window.onload = loadProfile;
+</script>
+</body>
+</html>
