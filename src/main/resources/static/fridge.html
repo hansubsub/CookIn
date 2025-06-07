@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>나의 냉장고</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background-color: #fff; }
+    .topbar { display: flex; justify-content: space-between; align-items: center; padding: 10px 30px; background-color: white; border-bottom: 2px solid #466f2b; }
+    .topbar-left { display: flex; align-items: center; }
+    .topbar-left img { width: 40px; margin-right: 10px; }
+    .topbar-left span { font-size: 24px; font-weight: bold; color: #466f2b; }
+    .topbar-right button { background: none; border: none; font-size: 16px; margin-left: 20px; cursor: pointer; }
+    .menubar { background-color: #466f2b; display: flex; justify-content: center; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); }
+    .menubar button { background: none; border: none; color: white; font-size: 16px; margin: 10px 100px; cursor: pointer; }
+    .menubar button + button { border-left: 1px solid white; padding-left: 100px; margin-left: 100px; }
+    .content { margin: 50px auto; width: 60%; max-width: 700px; min-height: 500px; border: 2px solid #333; padding: 30px; text-align: center; box-sizing: border-box; }
+    .content-title { font-size: 26px; color: #466f2b; font-weight: bold; margin-bottom: 30px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid #ccc; padding: 12px; font-size: 16px; }
+    th { background-color: #f2f2f2; }
+  </style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-left">
+    <img src="./images/fridge-icon.png" alt="CookIn 로고">
+    <span>CookIn</span>
+  </div>
+  <div class="topbar-right">
+    <button onclick="location.href='mypage.html'">마이페이지</button>
+    <button onclick="logout()">로그아웃</button>
+  </div>
+</div>
+
+<div class="menubar">
+  <button onclick="location.href='fridge.html'">나의 냉장고</button>
+  <button onclick="location.href='add_ingredient.html'">식재료 추가</button>
+</div>
+
+<div class="content">
+  <div class="content-title">나의 냉장고</div>
+  <table>
+    <thead>
+    <tr>
+      <th>식재료 이름</th>
+      <th>남은 일수</th>
+      <th>유통기한</th>
+    </tr>
+    </thead>
+    <tbody id="ingredient-table-body">
+    </tbody>
+  </table>
+</div>
+
+<!-- 유통기한 임박 알림 -->
+<div id="alert-box" style="display: none; background-color: #fff3cd; color: #856404; padding: 20px; border: 1px solid #ffeeba; border-radius: 8px; width: 60%; max-width: 700px; margin: 30px auto; text-align: center; font-weight: bold;"></div>
+
+<script>
+  async function loadIngredients() {
+    const response = await fetch('/api/ingredients/user', { credentials: 'include' });
+    const data = await response.json();
+
+    const tbody = document.getElementById('ingredient-table-body');
+    tbody.innerHTML = '';
+
+    data.forEach(item => {
+      const today = new Date();
+      const expireDate = new Date(item.expirationDate);
+      const diffTime = expireDate - today;
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      const row = `<tr>
+                    <td>${item.name}</td>
+                    <td>D-${diffDays}</td>
+                    <td>${item.expirationDate.replace(/-/g, '.')}</td>
+                  </tr>`;
+      tbody.innerHTML += row;
+    });
+  }
+
+  async function loadExpiringAlert() {
+    try {
+      const res = await fetch('/api/ingredients/expiring', { credentials: 'include' });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.length > 0) {
+          const box = document.getElementById('alert-box');
+          const html = data.map(i => `${i.name} (D-${getDday(i.expirationDate)})`).join(', ');
+          box.innerHTML = `⚠️ 유통기한 임박 재료: ${html}`;
+          box.style.display = 'block';
+        }
+      }
+    } catch (err) {
+      console.error("임박 식재료 불러오기 실패", err);
+    }
+  }
+
+  function getDday(dateStr) {
+    const today = new Date();
+    const target = new Date(dateStr);
+    const diff = Math.ceil((target - today) / (1000 * 60 * 60 * 24));
+    return diff;
+  }
+
+  function logout() {
+    fetch('/api/users/logout', {
+      method: 'POST',
+      credentials: 'include'
+    })
+            .then(res => {
+              if (res.ok) {
+                alert('로그아웃되었습니다.');
+                location.href = 'login.html';
+              } else {
+                alert('로그아웃 실패');
+              }
+            })
+            .catch(err => {
+              console.error("로그아웃 에러:", err);
+              alert("서버 오류");
+            });
+  }
+
+  window.onload = () => {
+    loadIngredients();
+    loadExpiringAlert();
+  };
+</script>
+</body>
+</html>

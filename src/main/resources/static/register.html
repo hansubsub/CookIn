@@ -18,11 +18,23 @@
             text-align: center;
         }
 
-        .title {
+        .logo-title {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-title img {
+            max-width: 40px;
+            height: auto;
+            margin-right: 10px;
+        }
+
+        .logo-title h1 {
             font-size: 32px;
             color: #568a35;
-            margin-bottom: 30px;
-            font-weight: bold;
+            margin: 0;
         }
 
         form {
@@ -55,29 +67,50 @@
         button:hover {
             background-color: #466f2b;
         }
+
+        .join-link {
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .join-link a {
+            text-decoration: none;
+            color: black;
+            border-bottom: 1px solid black;
+        }
+
+        .join-link a:hover {
+            color: #568a35;
+            border-bottom: 1px solid #568a35;
+        }
     </style>
 </head>
 <body>
 <div class="container">
-    <div class="title">Join</div>
+    <div class="logo-title">
+        <h1>Join</h1>
+    </div>
     <form id="register-form">
-        <input type="text" id="name" placeholder="이름" required>
         <input type="text" id="username" placeholder="아이디" required>
         <input type="password" id="password" placeholder="비밀번호" required>
         <input type="password" id="confirmPassword" placeholder="비밀번호 확인" required>
-        <input type="date" id="birth" required>
-        <button type="submit">회원가입</button>
+        <input type="text" id="name" placeholder="이름" required>
+        <input type="date" id="생년월일" required>
+        <button type="submit">Join</button>
     </form>
+    <div class="join-link">
+        <a href="login.html">Back to Login</a>
+    </div>
 </div>
 
 <script>
     document.getElementById('register-form').addEventListener('submit', async function(e) {
         e.preventDefault();
 
-        const name = document.getElementById('name').value;
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
         const confirmPassword = document.getElementById('confirmPassword').value;
+        const name = document.getElementById('name').value;
         const birth = document.getElementById('birth').value;
 
         if (password !== confirmPassword) {
@@ -89,18 +122,18 @@
             const response = await fetch('/api/users/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, username, password, birth })
+                credentials: 'include',
+                body: JSON.stringify({ username, password, name, birth })
             });
 
             if (response.ok) {
-                alert('회원가입 성공!');
-                window.location.href = '/login.html'; // 성공 후 이동할 페이지
+                alert('회원가입 성공! 로그인 페이지로 이동합니다.');
+                window.location.href = 'login.html';
             } else {
-                alert('회원가입 실패.');
+                alert('회원가입 실패');
             }
-        } catch (error) {
-            console.error('에러 발생:', error);
-            alert('서버 오류가 발생했습니다.');
+        } catch (err) {
+            alert('서버 오류 발생');
         }
     });
 </script>

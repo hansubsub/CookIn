@@ -106,28 +106,28 @@
   document.getElementById('login-form').addEventListener('submit', async function(e) {
     e.preventDefault();
 
-    const userId = document.getElementById('userId').value;
+    const username = document.getElementById('userId').value;
     const password = document.getElementById('password').value;
 
     try {
       const response = await fetch('/api/users/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, password })
+        credentials: 'include', // ← 세션 쿠키 포함
+        body: JSON.stringify({ username, password })
       });
 
       if (response.ok) {
-        const data = await response.json();
-        alert('로그인 성공! 환영합니다, ' + data.username);
-        window.location.href = '/home.html'; // 성공 후 이동할 페이지
+        alert('로그인 성공!');
+        window.location.href = 'fridge.html';
       } else {
-        alert('로그인 실패. 아이디 또는 비밀번호를 확인하세요.');
+        alert('로그인 실패');
       }
     } catch (error) {
-      console.error('에러 발생:', error);
-      alert('서버 오류가 발생했습니다.');
+      alert('서버 오류 발생');
     }
   });
 </script>
+
 </body>
 </html>
