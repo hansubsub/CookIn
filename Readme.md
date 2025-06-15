@@ -1,28 +1,62 @@
-# CookIn🍳🧑‍🍳
+# CookIn🍳🍽️
 
 ---
 
-**CookIn** 은 냉장고 식재료 관리 및 요리 추천 서비스이
-다.
-사용자들은 간편하게 자신의 냉장고에 있는 재료를 등록하고 유통기한도 관리할 수 있다. 
-이를 통해 냉장고에서 버려지는 재료를 최소화하고 재료를 낭비 없이 활용할 수 있
-는 다양한 요리 아이디어를 제공한다.
+**CookIn** 은 사용자의 식재료 관리 웹 서비스입니다.
+사용자들은 간편하게 자신의 식재료를 등록하고 유통기한를 쉽게 관리할 수 있습니다.
+이를 통해 냉장고에서 버려지는 재료를 최소화하고 식재료를 낭비 없이 활용할 수 있습니다.
 
 ---
 
-## 주요 기능
+### 필수 소프트웨어 설치
 
-▶냉장고 재료 등록 및 유통기한 관리: 사용자가 구매한 재료를 ‘나의 냉장고’에 등록하고 유통기한을 설정하면 임박한 유통기한에 대한 알림을 통해 재료를 효율적으로 관리할
-수 있다.
+- JDK 17 설치: [Downloads for Amazon Corretto 17 - Amazon Corretto 17](https://docs.aws.amazon.com/corretto/latest/corretto-17-ug/downloads-list.html)
+- MySQL + MySQL Workbench 설치: [MySQL :: Download MySQL Installer](https://dev.mysql.com/downloads/installer/)
+- InteliJ IDEA 설치(VS code도 가능): [Download IntelliJ IDEA](https://www.jetbrains.com/idea/download/?section=windows)
 
-▶음식 추천: 사용자가 보유한 재료를 입력하면 해당 재료로 만들 수 있는 다양한 요리
-를 추천받을 수 있으며 사용자는 필요한 요리 목록을 손쉽게 확인할 수 있다.
+### 데이터베이스 설정(MySQL)
 
-▶음식 목록 수정 및 관리: 사용자는 자신만의 요리 목록을 수정, 추가, 삭제할 수 있는
-기능을 통해 효율적인 목록 관리가 가능하다.
+1. MySQL Worbrench 접속 후 ‘+’  버튼을 이용하여 데이터 베이스 및 사용자 계정 설정 후 Test Connection 클릭
+    - **Connection Name:** `cookindb`
+    - **Username:** `localmaster`
+    - **Password:** `qwer1234`
+    
+    (Hostname, Port는 초기설정 유지해주세요 → **Hostname:** `127.0.0.1` , **Port:** `3306` )
+    
+2. 접속후 쿼리 실행
+    
+    ```sql
+    CREATE DATABASE cookin;
+    
+    CREATE USER 'localmaster'@'localhost' IDENTIFIED BY 'qwer1234';
+    
+    GRANT ALL PRIVILEGES ON cookin.* TO 'localmaster'@'localhost';
+    
+    FLUSH PRIVILEGES;
+    ```
+    
 
----
+### 프로젝트 설정(IntlliJ 기준)
 
-## 개발 상태
-1.Conceptulization 문서 작성 ✔️
-2.Analysis 문서 작성 ✔️
+1. 프로젝트 열기
+2.  ‘project structure’메뉴 → **SDK**: Amazon Corretto 17 선택
+3. resources 패키지 안에 application.yml  확
+    
+    ```java
+    spring:
+      jpa:
+        hibernate:
+          ddl-auto: update
+        show-sql: true
+        defer-datasource-initialization: true
+    
+      datasource:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/cookin
+        username: localmaster
+        password: qwer1234
+    ```
+    
+4. CookInApplicaion.java에서 실행 버튼 클릭 
+
+📌서버 주소로 접속해주세요. →  [http://localhost:8080](http://localhost:8080/fridge.html)
