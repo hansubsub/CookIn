@@ -40,7 +40,7 @@
 
 1. 프로젝트 열기
 2.  ‘project structure’메뉴 → **SDK**: Amazon Corretto 17 선택
-3. resources 패키지 안에 application.yml  확
+3. resources 패키지 안에 application.yml  확인
     
     ```java
     spring:
