@@ -61,7 +61,7 @@ sol2) 아이디: testid, 비밀번호: testpwd
 
 1. 프로젝트 열기
 2.  ‘project structure’메뉴 → **SDK**: Amazon Corretto 17 선택
-3. resources 패키지 안에 application.yml  확
+3. resources 패키지 안에 application.yml  확인
     
     ```java
     spring:
@@ -77,7 +77,7 @@ sol2) 아이디: testid, 비밀번호: testpwd
         username: localmaster
         password: qwer1234
     ```
-    
-4. CookInApplicaion.java에서 실행 버튼 클릭 
+   
+4. 오른쪽 Gradle 탭에서 🔄 Refresh 아이콘 클릭 → CookInApplicaion.java에서 실행 버튼 클릭 
 
 ### 4. 서버 주소로 접속해주세요. →  [http://localhost:8080](http://localhost:8080/fridge.html)
